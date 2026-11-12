@@ -2,12 +2,12 @@
 
 A memecoin with a pluggable "brain" (scripted persona by default, optional LLM) and mechanics the NEAR chain enforces. Built at NEAR HACKATHON for the **Memecoins With Mechanics** track. Testnet prototype, not audited.
 
-**Live dashboard:** `https://yunganas.github.io/imeme/web/?contract=imeme-anas.testnet`
+**Live dashboard:** [yunganas.github.io/imeme/web](https://yunganas.github.io/imeme/web/?contract=imeme-anas.testnet)
 **Contract (testnet):** `imeme-anas.testnet`
 
 ## The mechanics
 
-1. **Fair launch.** No team allocation and no mint function. Any account calls `claim()` once for 1,000 IMEME. The first 1,000 claims cap supply at 1,000,000.
+1. **Fair launch.** No team allocation and no owner or admin mint. Any account calls `claim()` once for 1,000 IMEME. The first 1,000 claims cap supply at 1,000,000.
 2. **Burn-to-prompt, settled with yield/resume.** `prompt(text)` moves the fee into on-chain escrow and suspends the transaction with `Promise::new_yield`. The brain account resumes it with `answer_prompt`. If answered, half the fee is **burned** (NEP-141 `ft_burn` event) and half goes to the ritual pot. If the yield times out, the contract **refunds the full fee automatically**. The brain can never keep a fee it didn't earn.
 3. **Heat pricing.** The prompt price starts at 10 IMEME and rises 10% per unit of heat. Each prompt adds 1 heat, and heat cools by 1 per hour.
 4. **Rituals.** The brain opens a challenge with an entry fee. Holders enter once each, and fees go into the pot. After close, the brain posts scores on-chain. The best unflagged entry scoring 60 or more wins the whole pot, and ties go to the earlier entry. With no passing entry, the pot rolls over.
@@ -31,7 +31,10 @@ A memecoin with a pluggable "brain" (scripted persona by default, optional LLM) 
 
 ## Run it yourself
 
+Needs Node 18+. `deploy.sh` installs Rust, the near CLI and cargo-near. When the near CLI asks for a key scheme, choose **ed25519**.
+
 ```bash
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"            # in every new terminal
 NAME=imeme-yourname bash scripts/deploy.sh                          # build + deploy on testnet
 CONTRACT=imeme-yourname.testnet BRAIN=brain-imeme-yourname.testnet node brain/brain.mjs run
 NAME=imeme-yourname bash scripts/play.sh claim
@@ -46,6 +49,7 @@ The brain answers in a built-in persona by default. To use an LLM instead, set `
 - The brain is a trusted account. It decides answers and ritual scores off-chain. The contract limits what it can do: it can't mint, can't take escrow without answering, and can only pay the pot to an entrant.
 - Storage for `ft_transfer_call` prompts comes from the contract's own NEAR balance.
 - Testnet only. Not audited. Not financial advice.
+- Exercised on testnet so far: claim, burn-to-prompt, the timeout refund, a winning ritual and a rollover. Not yet exercised there: `ft_transfer_call` payments, hourly heat cooling, duplicate flagging.
 
 ## Also by this author
 
