@@ -11,6 +11,8 @@
 
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { homedir } from "node:os";
+process.env.PATH = `${homedir()}/.cargo/bin:${homedir()}/.local/bin:${process.env.PATH}`;
 
 const CONTRACT = process.env.CONTRACT;
 const BRAIN = process.env.BRAIN;
@@ -40,7 +42,7 @@ async function view(method, args = {}) {
 }
 
 function call(method, args, { gas = "50 Tgas", deposit = "0 NEAR" } = {}) {
-  execFileSync("near", [
+  execFileSync(process.env.NEAR_BIN || "near", [
     "contract", "call-function", "as-transaction", CONTRACT, method,
     "json-args", JSON.stringify(args), "prepaid-gas", gas, "attached-deposit", deposit,
     "sign-as", BRAIN, "network-config", NETWORK, "sign-with-legacy-keychain", "send",
@@ -131,6 +133,7 @@ async function tick() {
       console.log(`answered #${p.id} from ${p.author}: ${answer}`);
     } catch (e) {
       console.error(`could not answer #${p.id} (maybe timed out, it will be refunded):`, String(e.stderr || e).slice(0, 300));
+      answered.delete(p.id); // retry next tick until the yield times out
     }
   }
   const r = await view("get_current_ritual");
