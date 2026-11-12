@@ -1,0 +1,24 @@
+[package]
+name = "imeme"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "iMeme: a NEP-141 memecoin with rules. Fair-launch claims, burn-to-prompt with demand pricing, and daily AI-judged rituals."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+near-sdk = "=5.27.0"
+near-contract-standards = "=5.27.0"
+
+[dev-dependencies]
+near-sdk = { version = "=5.27.0", features = ["unit-testing"] }
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true

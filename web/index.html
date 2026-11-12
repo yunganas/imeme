@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>iMeme: the joke needs rules</title>
+<style>
+  :root{--bg:#0d0d12;--card:#17171f;--ink:#f2f2f5;--dim:#9a9aae;--hot:#ff5c39;--ok:#3ddc97;--line:#2a2a36}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+  header{padding:28px 20px 8px;max-width:1000px;margin:auto}
+  h1{margin:0;font-size:34px}h1 span{color:var(--hot)}.sub{color:var(--dim)}
+  main{max-width:1000px;margin:auto;padding:12px 20px 40px;display:grid;gap:16px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .k{color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.v{font-size:22px;font-weight:700}
+  .heat .v{color:var(--hot)}h2{margin:0 0 10px;font-size:18px}
+  .p{border-top:1px solid var(--line);padding:10px 0}.p:first-child{border-top:0}
+  .who{color:var(--dim);font-size:12px}.q{font-weight:600}.a{color:var(--ok);margin-top:4px}
+  .tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);margin-left:6px}
+  .Pending{color:#ffd166}.Expired{color:var(--dim)}.Answered{color:var(--ok)}
+  code{background:#0a0a0f;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.row{grid-template-columns:1fr}}
+  input{background:#0a0a0f;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;width:100%}
+  footer{color:var(--dim);text-align:center;font-size:12px;padding-bottom:30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>i<span>Meme</span></h1>
+  <div class="sub">A memecoin with a brain and rules the chain enforces. NEAR testnet. <span id="acct"></span></div>
+</header>
+<main>
+  <section class="stats" id="stats"></section>
+  <div class="row">
+    <section class="card"><h2>Prompts to the brain</h2><div id="prompts" class="sub">Loading...</div></section>
+    <section class="card"><h2>Ritual</h2><div id="ritual" class="sub">Loading...</div></section>
+  </div>
+  <section class="card">
+    <h2>The rules</h2>
+    <div>1. <b>Fair launch:</b> anyone claims 1,000 IMEME once. No team tokens. 1,000 claims max.</div>
+    <div>2. <b>Burn-to-prompt:</b> pay IMEME to ask the brain. Your tokens wait in on-chain escrow (NEAR yield/resume). Answered: half burned, half to the pot. No answer in time: full refund. Each prompt raises the price 10%; it cools hourly.</div>
+    <div>3. <b>Ritual:</b> the brain posts a challenge, holders pay an entry fee into the pot, the best entry scoring 60+ takes it all. No winner: the pot rolls over.</div>
+  </section>
+  <section class="card">
+    <h2>Play from the terminal</h2>
+    <div class="sub">near-cli-rs, with your own testnet account as <code>YOU</code>:</div>
+    <p><code id="c1"></code></p><p><code id="c2"></code></p><p><code id="c3"></code></p>
+    <div class="sub">Watch another deployment: <input id="cin" placeholder="contract.testnet, then Enter"></div>
+  </section>
+</main>
+<footer>Testnet prototype for the NEAR Hackathon (Memecoins With Mechanics). Not audited. Not financial advice.</footer>
+<script>
+const qs=new URLSearchParams(location.search);
+const CONTRACT=qs.get("contract")||"imeme-anas.testnet";
+const RPC=qs.get("rpc")||"https://rpc.testnet.fastnear.com";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tok=y=>{const n=Number(BigInt(y)/10n**15n)/1000;return n.toLocaleString(undefined,{maximumFractionDigits:2})};
+async function view(m,a={}){const r=await fetch(RPC,{method:"POST",headers:{"content-type":"application/json"},
+ body:JSON.stringify({jsonrpc:"2.0",id:"w",method:"query",params:{request_type:"call_function",finality:"optimistic",
+ account_id:CONTRACT,method_name:m,args_base64:btoa(JSON.stringify(a))}})});const j=await r.json();
+ if(j.error||j.result?.error)throw new Error(JSON.stringify(j.error||j.result.error));
+ return JSON.parse(new TextDecoder().decode(new Uint8Array(j.result.result)))}
+function stat(k,v,c=""){return `<div class="card ${c}"><div class="k">${k}</div><div class="v">${v}</div></div>`}
+async function refresh(){
+ try{
+  const s=await view("get_stats");
+  document.getElementById("stats").innerHTML=stat("Supply",tok(s.total_supply))+stat("Burned",tok(s.total_burned))
+   +stat("Ritual pot",tok(s.pot))+stat("Heat",s.heat,"heat")+stat("Prompt price",tok(s.prompt_cost))+stat("Claims left",s.claims_left);
+  const ps=await view("get_prompts",{limit:12});
+  document.getElementById("prompts").innerHTML=ps.length?ps.map(p=>`<div class="p"><div class="who">#${p.id} · ${esc(p.author)} · paid ${tok(p.cost)}<span class="tag ${p.status}">${p.status}</span></div>
+   <div class="q">${esc(p.text)}</div>${p.answer?`<div class="a">${esc(p.answer)}</div>`:""}</div>`).join(""):"No prompts yet. Be the first.";
+  const r=await view("get_current_ritual");
+  if(!r){document.getElementById("ritual").textContent="No ritual yet.";}
+  else{const es=await view("get_entries",{ritual_id:r.id});const closes=new Date(Number(BigInt(r.closes_ns)/1000000n));
+   document.getElementById("ritual").innerHTML=`<div class="q">“${esc(r.challenge)}”</div>
+   <div class="who">Ritual #${r.id} · entry ${tok(r.entry_cost)} IMEME · ${r.settled?(r.winner?`won by ${esc(r.winner)} for ${tok(r.prize)}`:"no winner, pot rolled over"):`closes ${closes.toLocaleString()}`}</div>`
+   +es.map(e=>`<div class="p"><div class="who">${esc(e.author)}${e.score!=null?` · score ${e.score}${e.flagged?" (flagged)":""}`:""}${r.winner===e.author?'<span class="tag Answered">winner</span>':""}</div><div>${esc(e.text)}</div></div>`).join("");}
+ }catch(e){document.getElementById("prompts").textContent="Could not reach "+CONTRACT+": "+e.message}
+}
+document.getElementById("acct").innerHTML="Contract: <code>"+esc(CONTRACT)+"</code>";
+const base=`near contract call-function as-transaction ${CONTRACT}`, tail=`sign-as YOU network-config testnet sign-with-keychain send`;
+document.getElementById("c1").textContent=`${base} claim json-args '{}' prepaid-gas '30 Tgas' attached-deposit '0.01 NEAR' ${tail}`;
+document.getElementById("c2").textContent=`${base} prompt json-args '{"text":"gm iMeme"}' prepaid-gas '100 Tgas' attached-deposit '0.01 NEAR' ${tail}`;
+document.getElementById("c3").textContent=`${base} enter_ritual json-args '{"text":"my entry"}' prepaid-gas '30 Tgas' attached-deposit '0.01 NEAR' ${tail}`;
+document.getElementById("cin").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.value)location.search="?contract="+encodeURIComponent(e.target.value.trim())});
+refresh();setInterval(refresh,4000);
+</script>
+</body>
+</html>
