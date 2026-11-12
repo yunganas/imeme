@@ -1,6 +1,6 @@
 # iMeme: the joke needs rules
 
-A memecoin with an AI "brain" and mechanics the NEAR chain enforces. Built at NEAR HACKATHON for the **Memecoins With Mechanics** track. Testnet prototype, not audited.
+A memecoin with a pluggable "brain" (scripted persona by default, optional LLM) and mechanics the NEAR chain enforces.
 
 **Live dashboard:** `https://yunganas.github.io/imeme/web/?contract=imeme-anas.testnet`
 **Contract (testnet):** `imeme-anas.testnet`
@@ -15,7 +15,7 @@ A memecoin with an AI "brain" and mechanics the NEAR chain enforces. Built at NE
 
 ## NEAR features used
 
-- **Yield/resume** (`Promise::new_yield`, `YieldId::resume`) for escrowed, refund-on-timeout AI answers.
+- **Yield/resume** (`Promise::new_yield`, `YieldId::resume`) for escrowed, refund-on-timeout brain answers.
 - **NEP-141** fungible token with `ft_transfer_call`, burn and mint events (near-contract-standards 5.27).
 - **NEP-145** storage management. Callers pay their own storage, and unused deposit is refunded.
 
