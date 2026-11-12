@@ -1,6 +1,6 @@
 # iMeme: the joke needs rules
 
-A memecoin with a pluggable "brain" (scripted persona by default, optional LLM) and mechanics the NEAR chain enforces. Built at NEAR HACKATHON for the Memecoins With Mechanics track. Testnet prototype, not audited.
+A memecoin with a pluggable "brain" (scripted persona by default, optional LLM) and mechanics the NEAR chain enforces. Built at NEAR HACKATHON for the **Memecoins With Mechanics** track. Testnet prototype, not audited.
 
 **Live dashboard:** `https://yunganas.github.io/imeme/web/?contract=imeme-anas.testnet`
 **Contract (testnet):** `imeme-anas.testnet`
