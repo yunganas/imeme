@@ -2,7 +2,7 @@
 
 A memecoin with a pluggable "brain" (scripted persona by default, optional LLM) and mechanics the NEAR chain enforces. Built at NEAR HACKATHON for the **Memecoins With Mechanics** track. Testnet prototype, not audited.
 
-**Live dashboard:** [yunganas.github.io/imeme/web](https://yunganas.github.io/imeme/web/?contract=imeme-anas.testnet)
+**Live dashboard:** [yunganas.github.io/imeme/web](https://yunganas.github.io/imeme/web/?contract=imeme-anas.testnet) (restyled Nov 13, 2026: new look and clearer claim-rule wording, no logic or contract changes; the demo video shows the earlier style)
 **Contract (testnet):** `imeme-anas.testnet`
 
 ## The mechanics
