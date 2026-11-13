@@ -51,6 +51,16 @@ The brain answers in a built-in persona by default. To use an LLM instead, set `
 - Testnet only. Not audited. Not financial advice.
 - Exercised on testnet so far: claim, burn-to-prompt, the timeout refund, a winning ritual and a rollover. Not yet exercised there: `ft_transfer_call` payments, hourly heat cooling, duplicate flagging.
 
+## Known issues (found 2026-11-13, not yet fixed)
+
+A manual review of `contract/src/lib.rs` found these. It is not a professional audit. Testnet only. Fixes are planned after hackathon judging so the testnet history shown in the demo stays intact.
+
+- **"Fair launch" is first come, one claim per account.** It is not Sybil-resistant: one person can claim with many accounts.
+- **Rituals have no entry cap (medium).** `get_entries` returns only the first 100, so later entrants pay but can't be scored. Planned fix: cap entries at 100.
+- **The brain can rig a ritual (medium).** Nothing stops the brain or owner from entering, and the brain may score only some entries. Planned fix: block brain and owner entries and require every entry to be scored.
+- **`ft_transfer_call` prompts are cheap to spam (medium).** Their storage comes from the contract's NEAR and they are fully refunded on timeout. Planned fix: remove that path and keep `prompt()`, which charges the caller for storage.
+- **Owner powers.** The owner can replace the brain with `set_brain` and still holds a full-access key on the contract account.
+
 ## Also by this author
 
 This is one of two independent projects I entered in the NEAR Hackathon. The other is **[Swarm-for-Hire](https://github.com/yunganas/near-swarm)**, an agent job marketplace. The two share no code.
