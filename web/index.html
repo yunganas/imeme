@@ -3,27 +3,50 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>iMeme: the joke needs rules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0d0d12;--card:#17171f;--ink:#f2f2f5;--dim:#9a9aae;--hot:#ff5c39;--ok:#3ddc97;--line:#2a2a36}
-  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
-  header{padding:28px 20px 8px;max-width:1000px;margin:auto}
-  h1{margin:0;font-size:34px}h1 span{color:var(--hot)}.sub{color:var(--dim)}
-  main{max-width:1000px;margin:auto;padding:12px 20px 40px;display:grid;gap:16px}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-  .k{color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.v{font-size:22px;font-weight:700}
-  .heat .v{color:var(--hot)}h2{margin:0 0 10px;font-size:18px}
-  .p{border-top:1px solid var(--line);padding:10px 0}.p:first-child{border-top:0}
-  .who{color:var(--dim);font-size:12px}.q{font-weight:600}.a{color:var(--ok);margin-top:4px}
-  .tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);margin-left:6px}
-  .Pending{color:#ffd166}.Expired{color:var(--dim)}.Answered{color:var(--ok)}
-  code{background:#0a0a0f;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.row{grid-template-columns:1fr}}
-  input{background:#0a0a0f;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;width:100%}
-  footer{color:var(--dim);text-align:center;font-size:12px;padding-bottom:30px}
+  :root{--bg:#fff6e5;--card:#ffffff;--ink:#111014;--dim:#5d5866;--hot:#ff4d1c;--sun:#ffd23f;--ok:#00a86b;--line:#111014;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif;
+    background:radial-gradient(circle at 1px 1px,rgba(17,16,20,.13) 1px,transparent 0) 0 0/18px 18px,var(--bg)}
+  .ticker{background:var(--ink);color:var(--sun);font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;border-bottom:3px solid var(--ink)}
+  .ticker span{display:inline-block;padding:10px 0;animation:tick 28s linear infinite}
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  header{padding:36px 20px 10px;max-width:1040px;margin:auto}
+  h1{margin:0;font:400 clamp(56px,11vw,112px)/.9 "Archivo Black",Impact,sans-serif;letter-spacing:-.02em}
+  h1 span{color:var(--hot);-webkit-text-stroke:3px var(--ink);text-shadow:6px 6px 0 var(--ink)}
+  .sub{color:var(--dim)}
+  header .sub{font-size:17px;margin-top:14px;max-width:640px}
+  header .sub code{font-size:13px;word-break:normal;white-space:nowrap}
+  main{max-width:1040px;margin:auto;padding:18px 20px 48px;display:grid;gap:20px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+  .card{background:var(--card);border:3px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:6px 6px 0 var(--line);transition:transform .15s,box-shadow .15s}
+  .stats .card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--line)}
+  .stats .card:nth-child(1){background:#e9f2ff}.stats .card:nth-child(2){background:#ffe3d9}.stats .card:nth-child(3){background:#fff2b8}
+  .stats .card:nth-child(5){background:#e4fbef}.stats .card:nth-child(6){background:#f1e8ff}
+  .k{color:var(--dim);font:600 11px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.1em}
+  .v{font:400 26px/1.25 "Archivo Black",sans-serif;margin-top:6px}
+  .heat{background:var(--hot)!important}.heat .k{color:#3b0d00}.heat .v{color:#fff;text-shadow:2px 2px 0 var(--ink)}
+  h2{margin:0 0 12px;font:400 22px/1.1 "Archivo Black",sans-serif;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:14px;height:14px;background:var(--hot);border:2px solid var(--ink);border-radius:4px;transform:rotate(45deg)}
+  .p{border-top:2px dashed #d9d2c3;padding:12px 0}.p:first-child{border-top:0;padding-top:4px}
+  .who{color:var(--dim);font:12px/2 var(--mono)}.q{font-weight:700;font-size:16px}
+  .a{color:var(--ink);margin-top:8px;background:#e4fbef;border:2px solid var(--ink);border-radius:12px 12px 12px 2px;padding:8px 12px;display:inline-block}
+  .tag{font:600 11px/1 var(--mono);padding:4px 9px;border-radius:99px;border:2px solid var(--ink);margin-left:8px;display:inline-block;vertical-align:middle;background:#fff;text-transform:uppercase;letter-spacing:.06em}
+  .Pending{background:var(--sun);color:var(--ink)}.Expired{background:#eee;color:var(--dim)}.Answered{background:var(--ok);color:#fff}
+  code{background:var(--ink);color:#f7f3ea;padding:3px 7px;border-radius:7px;font:12.5px/1.7 var(--mono);word-break:break-all}
+  p code{display:block;padding:12px 14px;border-radius:10px;border-left:6px solid var(--hot)}
+  .rules div{padding:10px 0 10px 4px;border-top:2px dashed #d9d2c3}.rules div:first-of-type{border-top:0}
+  .rules b{background:var(--sun);padding:1px 6px;border:2px solid var(--ink);border-radius:6px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:760px){.row{grid-template-columns:1fr}}
+  input{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:10px;padding:10px 12px;width:100%;font:14px var(--mono);margin-top:8px}
+  input:focus{outline:0;box-shadow:4px 4px 0 var(--hot)}
+  footer{color:var(--dim);text-align:center;font:12px var(--mono);padding:0 20px 36px}
 </style>
 </head>
 <body>
+<div class="ticker" aria-hidden="true"><span>★ Memecoin with a brain ★ Burn-to-prompt ★ On-chain rituals ★ No team tokens ★ NEAR testnet ★ NEAR Hackathon 2026 ★ Memecoin with a brain ★ Burn-to-prompt ★ On-chain rituals ★ No team tokens ★ NEAR testnet ★ NEAR Hackathon 2026 ★ Memecoin with a brain ★ Burn-to-prompt ★ On-chain rituals ★ No team tokens ★ NEAR testnet ★ NEAR Hackathon 2026 ★ Memecoin with a brain ★ Burn-to-prompt ★ On-chain rituals ★ No team tokens ★ NEAR testnet ★ NEAR Hackathon 2026 </span></div>
 <header>
   <h1>i<span>Meme</span></h1>
   <div class="sub">A memecoin with a brain and rules the chain enforces. NEAR testnet. <span id="acct"></span></div>
@@ -34,9 +57,9 @@
     <section class="card"><h2>Prompts to the brain</h2><div id="prompts" class="sub">Loading...</div></section>
     <section class="card"><h2>Ritual</h2><div id="ritual" class="sub">Loading...</div></section>
   </div>
-  <section class="card">
+  <section class="card rules">
     <h2>The rules</h2>
-    <div>1. <b>Fair launch:</b> anyone claims 1,000 IMEME once. No team tokens. 1,000 claims max.</div>
+    <div>1. <b>Open claim:</b> any account claims 1,000 IMEME once, first come, 1,000 claims max. No team tokens and no owner mint. One claim per account, so it is not Sybil-resistant.</div>
     <div>2. <b>Burn-to-prompt:</b> pay IMEME to ask the brain. Your tokens wait in on-chain escrow (NEAR yield/resume). Answered: half burned, half to the pot. No answer in time: full refund. Each prompt raises the price 10%; it cools hourly.</div>
     <div>3. <b>Ritual:</b> the brain posts a challenge, holders pay an entry fee into the pot, the best entry scoring 60+ takes it all. No winner: the pot rolls over.</div>
   </section>
